@@ -1,4 +1,6 @@
 from room import Room
+from player import Player 
+import sys
 import textwrap
 
 # Declare all the rooms
@@ -34,6 +36,7 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+# print(str(room['outside'].n_to))
 #
 # Main
 #
@@ -41,25 +44,37 @@ room['treasure'].s_to = room['narrow']
 # Make a new player object that is currently in the 'outside' room.
 play_name = str(input("What do you want to name your character: "))
 player = Player(play_name, 'outside')
-cur_room = player.current_room
+cur_room = room[player.current_room]
 new_direction = ""
 
 # Write a loop that:
-while new_direction == "":
+while cur_room != "treasure":
 # * Prints the current room name
-    print(f"Current room: {cur_room}")
+    print(f"{player.name} is currently in: {cur_room}")
 
 # * Prints the current description (the textwrap module might be useful here).
-    print(textwrap.wrap(room[cur_room].description, width=70))
+    print((cur_room.description))
 
 # * Waits for user input and decides what to do.
 #
 
+
 # what's going on here...how do I write a user_direction + method into line 62?
-    new_direction = str(input("Please choose a direction (n/s/e/w): ")) + '_to'
-    print(new_direction)
-    new_direction = global()[new_direction]
-    if new_direction in ('n', 's', 'e', 'w') and room[cur_room].:
+    new_direction = str(input("Please choose a direction (n/s/e/w/ or 'q' to quit): "))
+
+    # new_direction = global()[new_direction]
+    if new_direction == 'n' and cur_room.n_to != '':
+        cur_room = cur_room.n_to
+    elif new_direction == 's' and cur_room.s_to != '':
+        cur_room = cur_room.s_to
+    elif new_direction == 'e' and cur_room.e_to != '':
+        cur_room = cur_room.e_to
+    elif new_direction == 'w' and cur_room.w_to != '':
+        cur_room = cur_room.w_to
+    elif new_direction == 'q':
+        sys.exit()
+    else:
+        print("Sorry but that movement isn't allowed.")
 
 # If the user enters a cardinal direction, attempt to move to the room there.
 # Print an error message if the movement isn't allowed.
