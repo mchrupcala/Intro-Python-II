@@ -1,4 +1,5 @@
 from room import Room
+import textwrap
 
 # Declare all the rooms
 
@@ -38,13 +39,28 @@ room['treasure'].s_to = room['narrow']
 #
 
 # Make a new player object that is currently in the 'outside' room.
+play_name = str(input("What do you want to name your character: "))
+player = Player(play_name, 'outside')
+cur_room = player.current_room
+new_direction = ""
 
 # Write a loop that:
-#
+while new_direction == "":
 # * Prints the current room name
+    print(f"Current room: {cur_room}")
+
 # * Prints the current description (the textwrap module might be useful here).
+    print(textwrap.wrap(room[cur_room].description, width=70))
+
 # * Waits for user input and decides what to do.
 #
+
+# what's going on here...how do I write a user_direction + method into line 62?
+    new_direction = str(input("Please choose a direction (n/s/e/w): ")) + '_to'
+    print(new_direction)
+    new_direction = global()[new_direction]
+    if new_direction in ('n', 's', 'e', 'w') and room[cur_room].:
+
 # If the user enters a cardinal direction, attempt to move to the room there.
 # Print an error message if the movement isn't allowed.
 #
