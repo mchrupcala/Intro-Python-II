@@ -9,6 +9,7 @@ class Room:
         self.s_to = ""
         self.e_to = ""
         self.w_to = ""
+        self.items = []
 
     def __repr__(self):
         return self.name

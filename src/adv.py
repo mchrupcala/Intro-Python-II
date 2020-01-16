@@ -1,5 +1,6 @@
 from room import Room
 from player import Player 
+from item import Item
 import sys
 import textwrap
 
@@ -36,6 +37,21 @@ room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
 
+# Create all items
+
+items = {
+    'candlestick': Item("candlestick", "An old metal candlestick that hasn't been used in a long time."),
+
+    'goldcoin': Item("goldcoin", "You inspect the coin. Though it might be dusty, you can see a Portugues cross, and the faint inscription 'IOANNES.V.D.G.PORT.ET.ALG.REX'"),
+    
+    'whip': Item("whip", "A tightly-wound leather bullwhip."),
+    
+    'treasure': Item("treasure chest", "A large oak chest filled to the brim with gold coins. It looks heavy!")
+}
+room['foyer'].items = [items['candlestick'], items["goldcoin"]]
+room['overlook'].items = [items['whip']]
+room['treasure'].items = [items['treasure']]
+
 # print(str(room['outside'].n_to))
 #
 # Main
@@ -45,6 +61,8 @@ room['treasure'].s_to = room['narrow']
 play_name = str(input("What do you want to name your character: "))
 player = Player(play_name, 'outside')
 cur_room = room[player.current_room]
+last_room = ""
+
 new_direction = ""
 
 # Write a loop that:
@@ -53,30 +71,56 @@ while cur_room != "treasure":
     print(f"{player.name} is currently in: {cur_room}")
 
 # * Prints the current description (the textwrap module might be useful here).
-    print((cur_room.description))
+    print(cur_room.description)
+
+    print(f"You notice the following items: {cur_room.items}")
 
 # * Waits for user input and decides what to do.
 #
 
 
-# what's going on here...how do I write a user_direction + method into line 62?
-    new_direction = str(input("Please choose a direction (n/s/e/w/ or 'q' to quit): "))
 
-    # new_direction = global()[new_direction]
-    if new_direction == 'n' and cur_room.n_to != '':
+    new_direction = str(input("Please choose a direction (n/s/e/w/ or 'q' to quit): ")).split(" ")
+
+
+    # If the user enters a cardinal direction, attempt to move to the room there.
+    if new_direction[0] == 'n' and cur_room.n_to != '':
+        last_room = cur_room
         cur_room = cur_room.n_to
-    elif new_direction == 's' and cur_room.s_to != '':
+    elif new_direction[0] == 's' and cur_room.s_to != '':
+        last_room = cur_room
         cur_room = cur_room.s_to
-    elif new_direction == 'e' and cur_room.e_to != '':
+    elif new_direction[0] == 'e' and cur_room.e_to != '':
+        last_room = cur_room
         cur_room = cur_room.e_to
-    elif new_direction == 'w' and cur_room.w_to != '':
+    elif new_direction[0] == 'w' and cur_room.w_to != '':
+        last_room = cur_room
         cur_room = cur_room.w_to
-    elif new_direction == 'q':
+    # If the user enters "q", quit the game.
+    elif new_direction[0] == 'q':
         sys.exit()
+    elif new_direction[0] in ['i', 'inventory']:
+        player.check_inventory()
+    # Print an error message if the movement isn't allowed.
     else:
         print("Sorry but that movement isn't allowed.")
 
-# If the user enters a cardinal direction, attempt to move to the room there.
-# Print an error message if the movement isn't allowed.
-#
-# If the user enters "q", quit the game.
+
+    #Second IF, which handles the item situation.
+    if len(new_direction) == 3:
+        new_item = new_direction[2]
+        if new_direction[1] in ["get", "take"] and new_item.lower() in str(last_room.items):
+            player.items.append(items[new_item])
+            last_room.items.remove(items[new_item])
+            items[new_item].on_take()
+
+        elif new_direction[1] in ["drop", "leave"] and new_item.lower() in str(player.items):
+            cur_room.items.append(items[new_item])
+            player.items.remove(items[new_item])
+            items[new_item].on_drop()
+        else:
+            print("The item you selected is not in this room.")
+
+
+
+
