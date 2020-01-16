@@ -23,6 +23,8 @@ to north. The smell of gold permeates the air."""),
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
+
+    'secret': Room("Secret Annex", "What's this? You found a hidden room!\n\n You walk down a winding staircase into a cramped, musty room. Your eyes dart to a shiny glint of metal in the center of the room....the hidden treasure, full to the brim with gold!!")
 }
 
 
@@ -46,11 +48,14 @@ items = {
     
     'whip': Item("whip", "A tightly-wound leather bullwhip."),
     
-    'treasure': Item("treasure chest", "A large oak chest filled to the brim with gold coins. It looks heavy!")
+    'treasure': Item("treasure", "A large oak chest filled to the brim with gold coins. It looks heavy!"),
+
+    'statue': Item("statue", "Creepy! This neck-high marble statue sits on an old bookshelf...you could swear that its eyes are looking straight at you.")
 }
 room['foyer'].items = [items['candlestick'], items["goldcoin"]]
 room['overlook'].items = [items['whip']]
-room['treasure'].items = [items['treasure']]
+room['secret'].items = [items['treasure']]
+room['treasure'].items = [items['statue']]
 
 # Main
 #
@@ -67,9 +72,6 @@ while game_won == False :
 
     if len(player.current_room.items) > 0:
         print(f"\nYou notice the following items: {player.current_room.items}")
-
-# * Waits for user input and decides what to do.
-#
 
     new_direction = str(input("\nPlease choose a direction (n/s/e/w/ or 'q' to quit): ")).split(" ")
     direction = new_direction[0]
@@ -100,3 +102,43 @@ while game_won == False :
             items[selected_item].on_drop()
         else:
             print("The item you selected is not in this room.")
+
+    #Unlock the secret room
+    if items['statue'] in room['foyer'].items and room['foyer'].w_to == None:
+        room['foyer'].w_to = room['secret']
+        room['secret'].e_to = room['foyer']
+        print("\nYou hear a sudden, grinding noise coming from a latch somewhere in the west-facing wall. It comes to a stop, followed by a soft 'click'")
+
+    #Winner!
+    if items['treasure'] in player.items:
+        game_won = True
+        print('''
+██╗   ██╗ ██████╗ ██╗   ██╗    ██╗    ██╗██╗███╗   ██╗██╗
+╚██╗ ██╔╝██╔═══██╗██║   ██║    ██║    ██║██║████╗  ██║██║
+ ╚████╔╝ ██║   ██║██║   ██║    ██║ █╗ ██║██║██╔██╗ ██║██║
+  ╚██╔╝  ██║   ██║██║   ██║    ██║███╗██║██║██║╚██╗██║╚═╝
+   ██║   ╚██████╔╝╚██████╔╝    ╚███╔███╔╝██║██║ ╚████║██╗
+   ╚═╝    ╚═════╝  ╚═════╝      ╚══╝╚══╝ ╚═╝╚═╝  ╚═══╝╚═╝
+                                                      
+''')
+# http://patorjk.com/software/taag/#p=display&f=ANSI%20Shadow&t=YOU%20WIN!%0A
+        print('''*******************************************************************************
+          |                   |                  |                     |
+ _________|________________.=""_;=.______________|_____________________|_______
+|                   |  ,-"_,=""     `"=.|                  |
+|___________________|__"=._o`"-._        `"=.______________|___________________
+          |                `"=._o`"=._      _`"=._                     |
+ _________|_____________________:=._o "=._."_.-="'"=.__________________|_______
+|                   |    __.--" , ; `"=._o." ,-"""-._ ".   |
+|___________________|_._"  ,. .` ` `` ,  `"-._"-._   ". '__|___________________
+          |           |o`"=._` , "` `; .". ,  "-._"-._; ;              |
+ _________|___________| ;`-.o`"=._; ." ` '`."\` . "-._ /_______________|_______
+|                   | |o;    `"-.o`"=._``  '` " ,__.--o;   |
+|___________________|_| ;     (#) `-.o `"=.`_.--"_o.-; ;___|___________________
+____/______/______/___|o;._    "      `".o|o_.--"    ;o;____/______/______/____
+/______/______/______/_"=._o--._        ; | ;        ; ;/______/______/______/_
+____/______/______/______/__"=._o--._   ;o|o;     _._;o;____/______/______/____
+/______/______/______/______/____"=._o._; | ;_.--"o.--"_/______/______/______/_
+____/______/______/______/______/_____"=.o|o_.--""___/______/______/______/____
+/______/______/______/______/______/______/______/______/______/______/
+*******************************************************************************''')
